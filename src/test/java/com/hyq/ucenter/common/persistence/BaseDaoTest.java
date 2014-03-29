@@ -1,13 +1,14 @@
-package com.thinkgem.jeesite.common.persistence;
+package com.hyq.ucenter.common.persistence;
 
 import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.thinkgem.jeesite.common.test.SpringTransactionalContextTests;
-import com.thinkgem.jeesite.modules.sys.dao.UserDao;
-import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.hyq.ucenter.common.persistence.Page;
+import com.hyq.ucenter.common.test.SpringTransactionalContextTests;
+import com.hyq.ucenter.modules.sys.dao.UserDao;
+import com.hyq.ucenter.modules.sys.entity.User;
 
 /**
  * BaseDaoTest
