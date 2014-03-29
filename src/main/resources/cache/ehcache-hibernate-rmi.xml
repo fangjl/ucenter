@@ -10,7 +10,7 @@
 		properties="peerDiscovery=automatic,multicastGroupAddress=230.0.0.1, multicastGroupPort=4446" />
 	<cacheManagerPeerListenerFactory class="net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory" />
 	
-	<diskStore path="java.io.tmpdir/jeesite/ehcache/hibernate" />
+	<diskStore path="java.io.tmpdir/ucenter/ehcache/hibernate" />
 
 	<!-- DefaultCache setting. -->
 	<defaultCache maxEntriesLocalHeap="100" eternal="false" timeToIdleSeconds="300" timeToLiveSeconds="600" 
@@ -20,54 +20,54 @@
     </defaultCache>
 
 	<!-- Special objects setting. -->
-	<cache name="com.thinkgem.jeesite.modules.sys.entity.Dict" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="true" maxEntriesLocalDisk="100000">
+	<cache name="com.hyq.ucenter.modules.sys.entity.Dict" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="true" maxEntriesLocalDisk="100000">
 		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 	</cache>
 	
-	<cache name="com.thinkgem.jeesite.modules.sys.entity.Area" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="true" maxEntriesLocalDisk="100000">
+	<cache name="com.hyq.ucenter.modules.sys.entity.Area" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="true" maxEntriesLocalDisk="100000">
 		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 	</cache>
-	<cache name="com.thinkgem.jeesite.modules.sys.entity.Area.childList" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="true" maxEntriesLocalDisk="100000">
+	<cache name="com.hyq.ucenter.modules.sys.entity.Area.childList" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="true" maxEntriesLocalDisk="100000">
 		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 	</cache>
-	<cache name="com.thinkgem.jeesite.modules.sys.entity.Area.officeList" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="true" maxEntriesLocalDisk="100000">
-		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
-	</cache>
-	
-	<cache name="com.thinkgem.jeesite.modules.sys.entity.Office" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="true" maxEntriesLocalDisk="100000">
-		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
-	</cache>
-	<cache name="com.thinkgem.jeesite.modules.sys.entity.Office.childList" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="true" maxEntriesLocalDisk="100000">
-		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
-	</cache>
-	<cache name="com.thinkgem.jeesite.modules.sys.entity.Office.userList" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="true" maxEntriesLocalDisk="100000">
+	<cache name="com.hyq.ucenter.modules.sys.entity.Area.officeList" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="true" maxEntriesLocalDisk="100000">
 		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 	</cache>
 	
-	<cache name="com.thinkgem.jeesite.modules.sys.entity.Menu" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="true" maxEntriesLocalDisk="100000">
+	<cache name="com.hyq.ucenter.modules.sys.entity.Office" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="true" maxEntriesLocalDisk="100000">
 		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 	</cache>
-	<cache name="com.thinkgem.jeesite.modules.sys.entity.Menu.childList" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="true" maxEntriesLocalDisk="100000">
+	<cache name="com.hyq.ucenter.modules.sys.entity.Office.childList" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="true" maxEntriesLocalDisk="100000">
 		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 	</cache>
-	<cache name="com.thinkgem.jeesite.modules.sys.entity.Menu.roleList" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="true" maxEntriesLocalDisk="100000">
-		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
-	</cache>
-	
-	<cache name="com.thinkgem.jeesite.modules.sys.entity.Role" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="true" maxEntriesLocalDisk="100000">
-		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
-	</cache>
-	<cache name="com.thinkgem.jeesite.modules.sys.entity.Role.menuList" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="true" maxEntriesLocalDisk="100000">
-		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
-	</cache>
-	<cache name="com.thinkgem.jeesite.modules.sys.entity.Role.userList" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="true" maxEntriesLocalDisk="100000">
+	<cache name="com.hyq.ucenter.modules.sys.entity.Office.userList" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="true" maxEntriesLocalDisk="100000">
 		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 	</cache>
 	
-	<cache name="com.thinkgem.jeesite.modules.sys.entity.User" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="true" maxEntriesLocalDisk="100000">
+	<cache name="com.hyq.ucenter.modules.sys.entity.Menu" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="true" maxEntriesLocalDisk="100000">
 		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 	</cache>
-	<cache name="com.thinkgem.jeesite.modules.sys.entity.User.roleList" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="true" maxEntriesLocalDisk="100000">
+	<cache name="com.hyq.ucenter.modules.sys.entity.Menu.childList" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="true" maxEntriesLocalDisk="100000">
+		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
+	</cache>
+	<cache name="com.hyq.ucenter.modules.sys.entity.Menu.roleList" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="true" maxEntriesLocalDisk="100000">
+		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
+	</cache>
+	
+	<cache name="com.hyq.ucenter.modules.sys.entity.Role" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="true" maxEntriesLocalDisk="100000">
+		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
+	</cache>
+	<cache name="com.hyq.ucenter.modules.sys.entity.Role.menuList" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="true" maxEntriesLocalDisk="100000">
+		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
+	</cache>
+	<cache name="com.hyq.ucenter.modules.sys.entity.Role.userList" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="true" maxEntriesLocalDisk="100000">
+		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
+	</cache>
+	
+	<cache name="com.hyq.ucenter.modules.sys.entity.User" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="true" maxEntriesLocalDisk="100000">
+		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
+	</cache>
+	<cache name="com.hyq.ucenter.modules.sys.entity.User.roleList" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="true" maxEntriesLocalDisk="100000">
 		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 	</cache>
 	
