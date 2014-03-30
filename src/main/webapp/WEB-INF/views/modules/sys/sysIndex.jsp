@@ -41,17 +41,9 @@
 						<c:set var="firstMenu" value="false"/>
 					</c:if>
 				 </c:forEach>
-				 <shiro:hasPermission name="cms:site:select">
-					<li class="dropdown">
-						<a class="dropdown-toggle" data-toggle="dropdown" href="#">${fnc:getSite(fnc:getCurrentSiteId()).name}<b class="caret"></b></a>
-						<ul class="dropdown-menu">
-						<c:forEach items="${fnc:getSiteList()}" var="site"><li><a href="${ctx}/cms/site/select?id=${site.id}&flag=1">${site.name}</a></li></c:forEach>
-						</ul>
-					</li>
-				 </shiro:hasPermission>
+				 
 	           </ul>
 	           <ul class="nav pull-right">
-				 <li><a href="${pageContext.request.contextPath}${fns:getFrontPath()}/index-${fnc:getCurrentSiteId()}.html" target="_blank" title="访问网站主页"><i class="icon-home"></i></a></li>
 			  	 <li id="themeSwitch" class="dropdown">
 			       	<a class="dropdown-toggle" data-toggle="dropdown" href="#" title="主题切换"><i class="icon-th-large"></i></a>
 				    <ul class="dropdown-menu">

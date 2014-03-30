@@ -40,13 +40,7 @@
 	<form:form id="inputForm" modelAttribute="user" action="${ctx}/sys/user/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
 		<tags:message content="${message}"/>
-		<div class="control-group">
-			<label class="control-label">归属公司:</label>
-			<div class="controls">
-                <tags:treeselect id="company" name="company.id" value="${user.company.id}" labelName="company.name" labelValue="${user.company.name}"
-					title="公司" url="/sys/office/treeData?type=1" cssClass="required"/>
-			</div>
-		</div>
+		
 		<div class="control-group">
 			<label class="control-label">归属部门:</label>
 			<div class="controls">
@@ -57,9 +51,11 @@
 		<div class="control-group">
 			<label class="control-label">登录名:</label>
 			<div class="controls">
-				<input id="oldLoginName" name="oldLoginName" type="hidden" value="${user.loginName}">
+				<input id="oldLoginName" name="oldLoginName" type="hidden"  value="${user.loginName}">
 				<form:input path="loginName" htmlEscape="false" maxlength="50" class="required userName"/>
+				<label class="info" for="loginName">@${user.tenantCode}</label>
 			</div>
+			
 		</div>
 		<div class="control-group">
 			<label class="control-label">工号:</label>
@@ -110,7 +106,7 @@
 				<form:textarea path="remarks" htmlEscape="false" rows="3" maxlength="200" class="input-xlarge"/>
 			</div>
 		</div>
-		<div class="control-group">
+		<%-- <div class="control-group">
 			<label class="control-label">用户类型:</label>
 			<div class="controls">
 				<form:select path="userType">
@@ -118,11 +114,11 @@
 					<form:options items="${fns:getDictList('sys_user_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</div>
-		</div>
+		</div> --%>
 		<div class="control-group">
 			<label class="control-label">用户角色:</label>
 			<div class="controls">
-				<form:checkboxes path="roleIdList" items="${allRoles}" itemLabel="name" itemValue="id" htmlEscape="false" class="required"/>
+				<form:radiobuttons path="roleIdList" items="${allRoles}" itemLabel="name" itemValue="id" htmlEscape="false" class="required"/>
 			</div>
 		</div>
 		<c:if test="${not empty user.id}">
