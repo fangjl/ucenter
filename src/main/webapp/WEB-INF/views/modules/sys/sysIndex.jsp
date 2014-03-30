@@ -77,8 +77,9 @@
 				</div>
 			</div>
 		    <div id="footer" class="row-fluid">
-	            Copyright &copy; 2012-${fns:getConfig('copyrightYear')} ${fns:getConfig('productName')} - Powered By <a href="https://github.com/thinkgem/jeesite" target="_blank">JeeSite</a> ${fns:getConfig('version')}
-			</div>
+		    		好运气网： 多立恒(北京)信息技术有限公司
+<%-- 	            Copyright &copy; 2012-${fns:getConfig('copyrightYear')} ${fns:getConfig('productName')} - Powered By ${fns:getConfig('version')}
+ --%>			</div>
 		</div>
 	</div>
 	<script type="text/javascript"> 
