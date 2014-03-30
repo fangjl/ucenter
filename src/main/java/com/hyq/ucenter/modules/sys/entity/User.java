@@ -51,7 +51,8 @@ import com.hyq.ucenter.common.utils.excel.fieldtype.RoleListType;
 public class User extends IdEntity<User> {
 
 	private static final long serialVersionUID = 1L;
-	private Office company;	// 归属公司
+	private String tenantCode;
+	
 	private Office office;	// 归属部门
 	private String loginName;// 登录名
 	private String password;// 密码
@@ -70,24 +71,23 @@ public class User extends IdEntity<User> {
 		super();
 	}
 	
-	public User(String id) {
+	public User(String tenantCode) {
 		this();
-		this.id = id;
+		this.tenantCode = tenantCode;
 	}
 	
-	@ManyToOne
-	@JoinColumn(name="company_id")
-	@NotFound(action = NotFoundAction.IGNORE)
-	@JsonIgnore
-	@NotNull(message="归属公司不能为空")
-	@ExcelField(title="归属公司", align=2, sort=20)
-	public Office getCompany() {
-		return company;
+	
+	
+	@Length(min=1, max=255)
+	public String getTenantCode() {
+		return tenantCode;
 	}
 
-	public void setCompany(Office company) {
-		this.company = company;
+	public void setTenantCode(String tenantCode) {
+		this.tenantCode = tenantCode;
 	}
+
+	
 	
 	@ManyToOne
 	@JoinColumn(name="office_id")

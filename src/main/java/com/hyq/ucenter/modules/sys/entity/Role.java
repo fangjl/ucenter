@@ -44,6 +44,8 @@ import com.hyq.ucenter.common.persistence.IdEntity;
 public class Role extends IdEntity<Role> {
 	
 	private static final long serialVersionUID = 1L;
+	private String tenantCode;
+	
 	private Office office;	// 归属机构
 	private String name; 	// 角色名称
 	private String dataScope; // 数据范围
@@ -70,6 +72,20 @@ public class Role extends IdEntity<Role> {
 		this();
 		this.id = id;
 		this.name = name;
+	}
+	public Role(String tenantCode) {
+		this();
+		this.tenantCode = tenantCode;
+	}
+	
+	
+	@Length(min=1, max=255)
+	public String getTenantCode() {
+		return tenantCode;
+	}
+
+	public void setTenantCode(String tenantCode) {
+		this.tenantCode = tenantCode;
 	}
 	
 	@ManyToOne

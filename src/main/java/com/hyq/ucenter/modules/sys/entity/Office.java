@@ -15,19 +15,14 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
-
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.annotations.Where;
 import org.hibernate.validator.constraints.Length;
-
 import com.google.common.collect.Lists;
 import com.hyq.ucenter.common.persistence.IdEntity;
 
@@ -44,6 +39,8 @@ public class Office extends IdEntity<Office> {
 
 	private static final long serialVersionUID = 1L;
 	
+	
+	private String tenantCode;
 	
 	
 	private Office parent;	// 父级编号
@@ -65,26 +62,32 @@ public class Office extends IdEntity<Office> {
 
 	public Office(){
 		super();
-	}
 	
-	public Office(String id){
+		
+	}
+	public Office(String tenantCode){
 		this();
-		this.id = id;
+		this.tenantCode = tenantCode;
 	}
 	
-	
-	
-	
-	
+	@Length(min=1, max=255)
+	public String getTenantCode() {
+		return tenantCode;
+	}
+
+	public void setTenantCode(String tenantCode) {
+		this.tenantCode = tenantCode;
+	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="parent_id")
-	@NotFound(action = NotFoundAction.IGNORE)
-	@NotNull
 	public Office getParent() {
 		return parent;
 	}
 
+	
+	
+	
 	public void setParent(Office parent) {
 		this.parent = parent;
 	}
@@ -100,8 +103,6 @@ public class Office extends IdEntity<Office> {
 
 	@ManyToOne
 	@JoinColumn(name="area_id")
-	@NotFound(action = NotFoundAction.IGNORE)
-	@NotNull
 	public Area getArea() {
 		return area;
 	}
@@ -203,7 +204,6 @@ public class Office extends IdEntity<Office> {
 	@OneToMany(mappedBy = "office", fetch=FetchType.LAZY)
 	@Where(clause="del_flag='"+DEL_FLAG_NORMAL+"'")
 	@OrderBy(value="id") @Fetch(FetchMode.SUBSELECT)
-	@NotFound(action = NotFoundAction.IGNORE)
 	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	public List<User> getUserList() {
 		return userList;
@@ -216,7 +216,6 @@ public class Office extends IdEntity<Office> {
 	@OneToMany(mappedBy = "parent", fetch=FetchType.LAZY)
 	@Where(clause="del_flag='"+DEL_FLAG_NORMAL+"'")
 	@OrderBy(value="code") @Fetch(FetchMode.SUBSELECT)
-	@NotFound(action = NotFoundAction.IGNORE)
 	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	public List<Office> getChildList() {
 		return childList;
