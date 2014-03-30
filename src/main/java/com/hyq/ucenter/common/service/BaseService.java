@@ -49,18 +49,21 @@ public abstract class BaseService {
 			for (Role r : user.getRoleList()){
 				if (!dataScope.contains(r.getDataScope()) && StringUtils.isNotBlank(officeAlias)){
 					boolean isDataScopeAll = false;
+					
+					junction.add(Restrictions.eq("tenantCode", user.getTenantCode()));
+
 					if (Role.DATA_SCOPE_ALL.equals(r.getDataScope())){
 						isDataScopeAll = true;
 					}
-					else if (Role.DATA_SCOPE_COMPANY_AND_CHILD.equals(r.getDataScope())){
-						junction.add(Restrictions.eq(officeAlias+".id", user.getCompany().getId()));
-						junction.add(Restrictions.like(officeAlias+".parentIds", user.getCompany().getParentIds()+user.getCompany().getId()+",%"));
+					/*else if (Role.DATA_SCOPE_COMPANY_AND_CHILD.equals(r.getDataScope())){
+						junction.add(Restrictions.eq(officeAlias+".id", user.getOffice().getId()));
+						junction.add(Restrictions.like(officeAlias+".parentIds", user.getOffice().getParentIds()+user.getOffice().getId()+",%"));
 					}
 					else if (Role.DATA_SCOPE_COMPANY.equals(r.getDataScope())){
-						junction.add(Restrictions.eq(officeAlias+".id", user.getCompany().getId()));
-						junction.add(Restrictions.and(Restrictions.eq(officeAlias+".parent.id", user.getCompany().getId()),
+						junction.add(Restrictions.eq(officeAlias+".id", user.getOffice().getId()));
+						junction.add(Restrictions.and(Restrictions.eq(officeAlias+".parent.id", user.getOffice().getId()),
 								Restrictions.eq(officeAlias+".type", "2"))); // 包括本公司下的部门
-					}
+					}*/
 					else if (Role.DATA_SCOPE_OFFICE_AND_CHILD.equals(r.getDataScope())){
 						junction.add(Restrictions.eq(officeAlias+".id", user.getOffice().getId()));
 						junction.add(Restrictions.like(officeAlias+".parentIds", user.getOffice().getParentIds()+user.getOffice().getId()+",%"));

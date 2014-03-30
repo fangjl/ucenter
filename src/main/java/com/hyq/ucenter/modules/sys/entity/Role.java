@@ -56,23 +56,18 @@ public class Role extends IdEntity<Role> {
 
 	// 数据范围（1：所有数据；2：所在公司及以下数据；3：所在公司数据；4：所在部门及以下数据；5：所在部门数据；8：仅本人数据；9：按明细设置）
 	public static final String DATA_SCOPE_ALL = "1";
-	public static final String DATA_SCOPE_COMPANY_AND_CHILD = "2";
-	public static final String DATA_SCOPE_COMPANY = "3";
+/*	public static final String DATA_SCOPE_COMPANY_AND_CHILD = "2";
+*/	public static final String DATA_SCOPE_COMPANY = "3";
 	public static final String DATA_SCOPE_OFFICE_AND_CHILD = "4";
 	public static final String DATA_SCOPE_OFFICE = "5";
-	public static final String DATA_SCOPE_SELF = "8";
-	public static final String DATA_SCOPE_CUSTOM = "9";
+/*	public static final String DATA_SCOPE_SELF = "8";
+*/	public static final String DATA_SCOPE_CUSTOM = "9";
 	
 	public Role() {
 		super();
 		this.dataScope = DATA_SCOPE_CUSTOM;
 	}
 
-	public Role(String id, String name) {
-		this();
-		this.id = id;
-		this.name = name;
-	}
 	public Role(String tenantCode) {
 		this();
 		this.tenantCode = tenantCode;
@@ -130,8 +125,8 @@ public class Role extends IdEntity<Role> {
 	}
 	
 	@Transient
-	public List<String> getUserIdList() {
-		List<String> nameIdList = Lists.newArrayList();
+	public List<Long> getUserIdList() {
+		List<Long> nameIdList = Lists.newArrayList();
 		for (User user : userList) {
 			nameIdList.add(user.getId());
 		}
@@ -142,7 +137,7 @@ public class Role extends IdEntity<Role> {
 	public String getUserIds() {
 		List<String> nameIdList = Lists.newArrayList();
 		for (User user : userList) {
-			nameIdList.add(user.getId());
+			nameIdList.add(user.getId()+"");
 		}
 		return StringUtils.join(nameIdList, ",");
 	}
@@ -165,7 +160,7 @@ public class Role extends IdEntity<Role> {
 	public List<String> getMenuIdList() {
 		List<String> menuIdList = Lists.newArrayList();
 		for (Menu menu : menuList) {
-			menuIdList.add(menu.getId());
+			menuIdList.add(menu.getId()+"");
 		}
 		return menuIdList;
 	}
@@ -175,7 +170,7 @@ public class Role extends IdEntity<Role> {
 		menuList = Lists.newArrayList();
 		for (String menuId : menuIdList) {
 			Menu menu = new Menu();
-			menu.setId(menuId);
+			menu.setId(Long.parseLong(menuId));
 			menuList.add(menu);
 		}
 	}
@@ -184,7 +179,7 @@ public class Role extends IdEntity<Role> {
 	public String getMenuIds() {
 		List<String> nameIdList = Lists.newArrayList();
 		for (Menu menu : menuList) {
-			nameIdList.add(menu.getId());
+			nameIdList.add(menu.getId()+"");
 		}
 		return StringUtils.join(nameIdList, ",");
 	}
@@ -196,7 +191,7 @@ public class Role extends IdEntity<Role> {
 			String[] ids = StringUtils.split(menuIds, ",");
 			for (String menuId : ids) {
 				Menu menu = new Menu();
-				menu.setId(menuId);
+				menu.setId(Long.parseLong(menuId));
 				menuList.add(menu);
 			}
 		}
@@ -218,8 +213,8 @@ public class Role extends IdEntity<Role> {
 
 
 	@Transient
-	public List<String> getOfficeIdList() {
-		List<String> officeIdList = Lists.newArrayList();
+	public List<Long> getOfficeIdList() {
+		List<Long> officeIdList = Lists.newArrayList();
 		for (Office office : officeList) {
 			officeIdList.add(office.getId());
 		}
@@ -231,7 +226,7 @@ public class Role extends IdEntity<Role> {
 		officeList = Lists.newArrayList();
 		for (String officeId : officeIdList) {
 			Office office = new Office();
-			office.setId(officeId);
+			office.setId(Long.parseLong(officeId));
 			officeList.add(office);
 		}
 	}
@@ -240,7 +235,7 @@ public class Role extends IdEntity<Role> {
 	public String getOfficeIds() {
 		List<String> nameIdList = Lists.newArrayList();
 		for (Office office : officeList) {
-			nameIdList.add(office.getId());
+			nameIdList.add(office.getId()+"");
 		}
 		return StringUtils.join(nameIdList, ",");
 	}
@@ -252,7 +247,7 @@ public class Role extends IdEntity<Role> {
 			String[] ids = StringUtils.split(officeIds, ",");
 			for (String officeId : ids) {
 				Office office = new Office();
-				office.setId(officeId);
+				office.setId(Long.parseLong(officeId));
 				officeList.add(office);
 			}
 		}
@@ -286,7 +281,8 @@ public class Role extends IdEntity<Role> {
 
 	@Transient
 	public boolean isAdmin(){
-		return isAdmin(this.id);
+	//	return isAdmin(this.id);
+		return false;
 	}
 	
 	@Transient

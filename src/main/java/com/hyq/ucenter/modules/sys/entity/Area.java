@@ -56,10 +56,7 @@ public class Area extends IdEntity<Area> {
 		super();
 	}
 	
-	public Area(String id){
-		this();
-		this.id = id;
-	}
+	
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="parent_id")
@@ -136,11 +133,11 @@ public class Area extends IdEntity<Area> {
 	}
 
 	@Transient
-	public static void sortList(List<Area> list, List<Area> sourcelist, String parentId){
+	public static void sortList(List<Area> list, List<Area> sourcelist, Long parentId){
 		for (int i=0; i<sourcelist.size(); i++){
 			Area e = sourcelist.get(i);
 			if (e.getParent()!=null && e.getParent().getId()!=null
-					&& e.getParent().getId().equals(parentId)){
+					&& e.getParent().getId()==parentId){
 				list.add(e);
 				// 判断是否还有子节点, 有则继续获取子节点
 				for (int j=0; j<sourcelist.size(); j++){
@@ -157,7 +154,8 @@ public class Area extends IdEntity<Area> {
 
 	@Transient
 	public boolean isAdmin(){
-		return isAdmin(this.id);
+		//return isAdmin(this.id);
+		return false;
 	}
 	
 	@Transient

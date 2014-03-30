@@ -20,11 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.hyq.ucenter.common.config.Global;
-import com.hyq.ucenter.common.utils.StringUtils;
 import com.hyq.ucenter.common.web.BaseController;
 import com.hyq.ucenter.modules.sys.entity.Office;
 import com.hyq.ucenter.modules.sys.entity.Role;
@@ -52,11 +50,11 @@ public class RoleController extends BaseController {
 	private OfficeService officeService;
 	
 	@ModelAttribute("role")
-	public Role get(@RequestParam(required=false) String id) {
-		if (StringUtils.isNotBlank(id)){
+	public Role get(@RequestParam(required=false) Long id) {
+		if (null!=id){
 			return systemService.getRole(id);
 		}else{
-			return new Role();
+			return new Role(UserUtils.getUser().getTenantCode());
 		}
 	}
 	
@@ -138,7 +136,7 @@ public class RoleController extends BaseController {
 	@RequiresPermissions("sys:role:view")
 	@ResponseBody
 	@RequestMapping(value = "users")
-	public List<Map<String, Object>> users(String officeId, HttpServletResponse response) {
+	public List<Map<String, Object>> users(Long officeId, HttpServletResponse response) {
 		response.setContentType("application/json; charset=UTF-8");
 		List<Map<String, Object>> mapList = Lists.newArrayList();
 		Office office = officeService.get(officeId);
@@ -155,7 +153,7 @@ public class RoleController extends BaseController {
 	
 	@RequiresPermissions("sys:role:edit")
 	@RequestMapping(value = "outrole")
-	public String outrole(String userId, String roleId, RedirectAttributes redirectAttributes) {
+	public String outrole(Long userId, Long roleId, RedirectAttributes redirectAttributes) {
 		if(Global.isDemoMode()){
 			addMessage(redirectAttributes, "演示模式，不允许操作！");
 			return "redirect:"+Global.getAdminPath()+"/sys/role/assign?id="+roleId;

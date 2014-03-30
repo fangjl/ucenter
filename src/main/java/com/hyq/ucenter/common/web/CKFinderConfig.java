@@ -5,18 +5,14 @@
  */
 package com.hyq.ucenter.common.web;
 
-import java.io.File;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.shiro.SecurityUtils;
-
 import com.ckfinder.connector.ServletContextFactory;
 import com.ckfinder.connector.configuration.Configuration;
 import com.ckfinder.connector.data.AccessControlLevel;
 import com.ckfinder.connector.utils.AccessControlUtil;
-import com.hyq.ucenter.common.config.Global;
 import com.hyq.ucenter.modules.sys.security.SystemAuthorizingRealm.Principal;
 
 /**

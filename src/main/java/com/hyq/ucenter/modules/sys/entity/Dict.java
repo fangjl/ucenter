@@ -39,10 +39,7 @@ public class Dict extends IdEntity<Dict> {
 		super();
 	}
 	
-	public Dict(String id) {
-		this();
-		this.id = id;
-	}
+	
 
 	@Length(min=1, max=100)
 	public String getLabel() {

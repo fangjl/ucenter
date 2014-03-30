@@ -66,7 +66,13 @@ public class SystemAuthorizingRealm extends AuthorizingRealm {
 			}
 		}
 
-		User user = getSystemService().getUserByLoginName(token.getUsername());
+		if(!token.getUsername().contains("@")){
+			return null;
+		}
+		String userName = token.getUsername().split("@")[0];
+		String tenantCode = token.getUsername().split("@")[1];
+		
+		User user = getSystemService().getUserByLoginName(tenantCode,userName);
 		if (user != null) {
 			byte[] salt = Encodes.decodeHex(user.getPassword().substring(0,16));
 			return new SimpleAuthenticationInfo(new Principal(user), 
@@ -82,7 +88,8 @@ public class SystemAuthorizingRealm extends AuthorizingRealm {
 	@Override
 	protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
 		Principal principal = (Principal) getAvailablePrincipal(principals);
-		User user = getSystemService().getUserByLoginName(principal.getLoginName());
+		
+		User user = getSystemService().getUserByLoginName(principal.getTenantCode(),principal.getLoginName());
 		if (user != null) {
 			UserUtils.putCache("user", user);
 			SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
@@ -150,18 +157,20 @@ public class SystemAuthorizingRealm extends AuthorizingRealm {
 
 		private static final long serialVersionUID = 1L;
 		
-		private String id;
+		private Long id;
 		private String loginName;
 		private String name;
+		private String tenantCode;
 		private Map<String, Object> cacheMap;
 
 		public Principal(User user) {
 			this.id = user.getId();
 			this.loginName = user.getLoginName();
 			this.name = user.getName();
+			this.tenantCode = user.getTenantCode();
 		}
 
-		public String getId() {
+		public Long getId() {
 			return id;
 		}
 
@@ -171,6 +180,14 @@ public class SystemAuthorizingRealm extends AuthorizingRealm {
 
 		public String getName() {
 			return name;
+		}
+
+		public String getTenantCode() {
+			return tenantCode;
+		}
+
+		public void setTenantCode(String tenantCode) {
+			this.tenantCode = tenantCode;
 		}
 
 		public Map<String, Object> getCacheMap() {

@@ -1,8 +1,4 @@
-/**
- * Copyright &copy; 2012-2013 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- */
+
 package com.hyq.ucenter.modules.sys.utils;
 
 import java.util.List;
@@ -17,7 +13,6 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
-
 import com.google.common.collect.Maps;
 import com.hyq.ucenter.common.service.BaseService;
 import com.hyq.ucenter.common.utils.SpringContextHolder;
@@ -60,7 +55,6 @@ public class UserUtils extends BaseService {
 				Principal principal = (Principal)subject.getPrincipal();
 				if (principal!=null){
 					user = userDao.get(principal.getId());
-//					Hibernate.initialize(user.getRoleList());
 					putCache(CACHE_USER, user);
 				}
 			}catch (UnavailableSecurityManagerException e) {
@@ -98,6 +92,7 @@ public class UserUtils extends BaseService {
 			dc.createAlias("office", "office");
 			dc.createAlias("userList", "userList", JoinType.LEFT_OUTER_JOIN);
 			dc.add(dataScopeFilter(user, "office", "userList"));
+			dc.add(Restrictions.eq("tenantCode", user.getTenantCode()));
 			dc.add(Restrictions.eq(Role.FIELD_DEL_FLAG, Role.DEL_FLAG_NORMAL));
 			dc.addOrder(Order.asc("office.code")).addOrder(Order.asc("name"));
 			list = roleDao.find(dc);
@@ -148,6 +143,7 @@ public class UserUtils extends BaseService {
 //			}
 			DetachedCriteria dc = officeDao.createDetachedCriteria();
 			dc.add(dataScopeFilter(user, dc.getAlias(), ""));
+			dc.add(Restrictions.eq("tenantCode",user.getTenantCode()));     //所属租户编码
 			dc.add(Restrictions.eq("delFlag", Office.DEL_FLAG_NORMAL));
 			dc.addOrder(Order.asc("code"));
 			officeList = officeDao.find(dc);
@@ -155,6 +151,8 @@ public class UserUtils extends BaseService {
 		}
 		return officeList;
 	}
+	
+	
 	
 
 	public static User getUserById(String id){

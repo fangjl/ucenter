@@ -33,9 +33,9 @@ import com.hyq.ucenter.common.utils.StringUtils;
 import com.hyq.ucenter.common.utils.excel.ExportExcel;
 import com.hyq.ucenter.common.utils.excel.ImportExcel;
 import com.hyq.ucenter.common.web.BaseController;
-import com.hyq.ucenter.modules.sys.entity.Office;
 import com.hyq.ucenter.modules.sys.entity.Role;
 import com.hyq.ucenter.modules.sys.entity.User;
+import com.hyq.ucenter.modules.sys.service.OfficeService;
 import com.hyq.ucenter.modules.sys.service.SystemService;
 import com.hyq.ucenter.modules.sys.utils.UserUtils;
 
@@ -50,15 +50,18 @@ public class UserController extends BaseController {
 
 	@Autowired
 	private SystemService systemService;
-	
+	@Autowired
+	private OfficeService officeService;
 	@ModelAttribute
-	public User get(@RequestParam(required=false) String id) {
-		if (StringUtils.isNotBlank(id)){
+	public User get(@RequestParam(required=false) Long id) {
+		if (null!=id){
 			return systemService.getUser(id);
 		}else{
-			return new User();
+			return new User(UserUtils.getUser().getTenantCode());
+			
 		}
 	}
+	
 	
 	@RequiresPermissions("sys:user:view")
 	@RequestMapping(value = {"list", ""})
@@ -71,22 +74,22 @@ public class UserController extends BaseController {
 	@RequiresPermissions("sys:user:view")
 	@RequestMapping(value = "form")
 	public String form(User user, Model model) {
-		if (user.getCompany()==null || user.getCompany().getId()==null){
+	/*	if (user.getCompany()==null || user.getCompany().getId()==null){
 			user.setCompany(UserUtils.getUser().getCompany());
-		}
+		}*/
 		if (user.getOffice()==null || user.getOffice().getId()==null){
 			user.setOffice(UserUtils.getUser().getOffice());
 		}
 		
 		//判断显示的用户是否在授权范围内
-		String officeId = user.getOffice().getId();
+		Long officeId = user.getOffice().getId();
 		User currentUser = UserUtils.getUser();
 		if (!currentUser.isAdmin()){
 			String dataScope = systemService.getDataScope(currentUser);
 			//System.out.println(dataScope);
 			if(dataScope.indexOf("office.id=")!=-1){
 				String AuthorizedOfficeId = dataScope.substring(dataScope.indexOf("office.id=")+10, dataScope.indexOf(" or"));
-				if(!AuthorizedOfficeId.equalsIgnoreCase(officeId)){
+				if(!AuthorizedOfficeId.equalsIgnoreCase(officeId+"")){
 					return "error/403";
 				}
 			}
@@ -105,8 +108,8 @@ public class UserController extends BaseController {
 			return "redirect:"+Global.getAdminPath()+"/sys/user/?repage";
 		}
 		// 修正引用赋值问题，不知道为何，Company和Office引用的一个实例地址，修改了一个，另外一个跟着修改。
-		user.setCompany(new Office(request.getParameter("company.id")));
-		user.setOffice(new Office(request.getParameter("office.id")));
+	//	user.setCompany(new Office(request.getParameter("company.id")));
+		user.setOffice(officeService.get(Long.parseLong(request.getParameter("office.id"))));
 		// 如果新密码为空，则不更换密码
 		if (StringUtils.isNotBlank(newPassword)) {
 			user.setPassword(SystemService.entryptPassword(newPassword));
@@ -122,7 +125,7 @@ public class UserController extends BaseController {
 		List<Role> roleList = Lists.newArrayList();
 		List<String> roleIdList = user.getRoleIdList();
 		for (Role r : systemService.findAllRole()){
-			if (roleIdList.contains(r.getId())){
+			if (roleIdList.contains(r.getId()+"")){
 				roleList.add(r);
 			}
 		}
@@ -139,14 +142,14 @@ public class UserController extends BaseController {
 	
 	@RequiresPermissions("sys:user:edit")
 	@RequestMapping(value = "delete")
-	public String delete(String id, RedirectAttributes redirectAttributes) {
+	public String delete(Long id, RedirectAttributes redirectAttributes) {
 		if(Global.isDemoMode()){
 			addMessage(redirectAttributes, "演示模式，不允许操作！");
 			return "redirect:"+Global.getAdminPath()+"/sys/user/?repage";
 		}
-		if (UserUtils.getUser().getId().equals(id)){
+		if (UserUtils.getUser().getId()==id){
 			addMessage(redirectAttributes, "删除用户失败, 不允许删除当前用户");
-		}else if (User.isAdmin(id)){
+		}else if (get(id).isAdmin()){
 			addMessage(redirectAttributes, "删除用户失败, 不允许删除超级管理员用户");
 		}else{
 			systemService.deleteUser(id);
@@ -160,7 +163,7 @@ public class UserController extends BaseController {
     public String exportFile(User user, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes) {
 		try {
             String fileName = "用户数据"+DateUtils.getDate("yyyyMMddHHmmss")+".xlsx"; 
-    		Page<User> page = systemService.findUser(new Page<User>(request, response, -1), user); 
+    		Page<User> page = systemService.findUser(new Page<User>(request, response), user); 
     		new ExportExcel("用户数据", User.class).setDataList(page.getList()).write(response, fileName).dispose();
     		return null;
 		} catch (Exception e) {
@@ -232,9 +235,10 @@ public class UserController extends BaseController {
 	@RequiresPermissions("sys:user:edit")
 	@RequestMapping(value = "checkLoginName")
 	public String checkLoginName(String oldLoginName, String loginName) {
+		;
 		if (loginName !=null && loginName.equals(oldLoginName)) {
 			return "true";
-		} else if (loginName !=null && systemService.getUserByLoginName(loginName) == null) {
+		} else if (loginName !=null && systemService.getUserByLoginName(UserUtils.getUser().getTenantCode(),loginName) == null) {
 			return "true";
 		}
 		return "false";

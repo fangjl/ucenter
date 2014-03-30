@@ -28,7 +28,7 @@ public class AreaService extends BaseService {
 	@Autowired
 	private AreaDao areaDao;
 	
-	public Area get(String id) {
+	public Area get(Long id) {
 		return areaDao.get(id);
 	}
 	

@@ -24,7 +24,7 @@ public class Tenant  extends IdEntity<Tenant> {
 	private String master; 	// 负责人
 	private String phone; 	// 电话
 	private String email; 	// 邮箱
-	private Integer status;   // 0  ： 注册   1：已经审核   2：冻结
+	private Integer status=0;   // 0  ： 注册   1：已经审核   2：冻结
 	
 	public String getTenantCode() {
 		return tenantCode;

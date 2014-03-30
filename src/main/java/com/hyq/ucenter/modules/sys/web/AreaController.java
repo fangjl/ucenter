@@ -43,8 +43,8 @@ public class AreaController extends BaseController {
 	private AreaService areaService;
 	
 	@ModelAttribute("area")
-	public Area get(@RequestParam(required=false) String id) {
-		if (StringUtils.isNotBlank(id)){
+	public Area get(@RequestParam(required=false) Long id) {
+		if (null!=id){
 			return areaService.get(id);
 		}else{
 			return new Area();
@@ -56,7 +56,7 @@ public class AreaController extends BaseController {
 	public String list(Area area, Model model) {
 //		User user = UserUtils.getUser();
 //		if(user.isAdmin()){
-			area.setId("1");
+	//		area.setId("1");
 //		}else{
 //			area.setId(user.getArea().getId());
 //		}

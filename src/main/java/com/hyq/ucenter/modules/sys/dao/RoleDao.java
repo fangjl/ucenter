@@ -19,8 +19,8 @@ import com.hyq.ucenter.modules.sys.entity.Role;
 @Repository
 public class RoleDao extends BaseDao<Role> {
 
-	public Role findByName(String name){
-		return getByHql("from Role where delFlag = :p1 and name = :p2", new Parameter(Role.DEL_FLAG_NORMAL, name));
+	public Role findByName(String tenantCode,String name){
+		return getByHql("from Role where delFlag = :p1 and tenantCode=:p2 and name = :p3", new Parameter(Role.DEL_FLAG_NORMAL, tenantCode,name));
 	}
 
 //	@Query("from Role where delFlag='" + Role.DEL_FLAG_NORMAL + "' order by name")

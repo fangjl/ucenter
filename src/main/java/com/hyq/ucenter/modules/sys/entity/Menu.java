@@ -1,12 +1,6 @@
-/**
- * Copyright &copy; 2012-2013 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- */
+
 package com.hyq.ucenter.modules.sys.entity;
-
 import java.util.List;
-
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -17,8 +11,6 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
-
-import org.apache.commons.lang.ObjectUtils;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.DynamicInsert;
@@ -29,7 +21,6 @@ import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.annotations.Where;
 import org.hibernate.validator.constraints.Length;
-
 import com.google.common.collect.Lists;
 import com.hyq.ucenter.common.persistence.IdEntity;
 
@@ -53,7 +44,6 @@ public class Menu extends IdEntity<Menu> {
 	private String icon; 	// 图标
 	private Integer sort; 	// 排序
 	private String isShow; 	// 是否在菜单中显示（1：显示；0：不显示）
-	private String isActiviti; 	// 是否同步到工作流（1：同步；0：不同步）
 	private String permission; // 权限标识
 	
 	private List<Menu> childList = Lists.newArrayList();// 拥有子菜单列表
@@ -63,9 +53,8 @@ public class Menu extends IdEntity<Menu> {
 		super();
 		this.sort = 30;
 	}
-	
-	public Menu(String id){
-		this();
+	public Menu(Long id){
+		super();
 		this.id = id;
 	}
 	
@@ -144,15 +133,7 @@ public class Menu extends IdEntity<Menu> {
 		this.isShow = isShow;
 	}
 
-	@Length(min=1, max=1)
-	public String getIsActiviti() {
-		return isActiviti;
-	}
-
-	public void setIsActiviti(String isActiviti) {
-		this.isActiviti = isActiviti;
-	}
-
+	
 	@Length(min=0, max=200)
 	public String getPermission() {
 		return permission;
@@ -189,7 +170,7 @@ public class Menu extends IdEntity<Menu> {
 	}
 	
 	@Transient
-	public static void sortList(List<Menu> list, List<Menu> sourcelist, String parentId){
+	public static void sortList(List<Menu> list, List<Menu> sourcelist, Long parentId){
 		for (int i=0; i<sourcelist.size(); i++){
 			Menu e = sourcelist.get(i);
 			if (e.getParent()!=null && e.getParent().getId()!=null
@@ -214,18 +195,10 @@ public class Menu extends IdEntity<Menu> {
 	}
 	
 	@Transient
-	public static boolean isRoot(String id){
+	public static boolean isRoot(Long id){
 		return id != null && id.equals("1");
 	}
 	
-	@Transient
-	public String getActivitiGroupId() {
-		return ObjectUtils.toString(getPermission());
-	}
-
-	@Transient
-	public String getActivitiGroupName() {
-		return ObjectUtils.toString(getId());
-	}
+	
 
 }

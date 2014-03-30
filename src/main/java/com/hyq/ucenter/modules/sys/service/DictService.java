@@ -36,10 +36,9 @@ public class DictService extends BaseService {
 	private DictDao dictDao;
 	
 	@Autowired
-	@SuppressWarnings("unused")
 	private MyBatisDictDao myBatisDictDao;
 	
-	public Dict get(String id) {
+	public Dict get(Long id) {
 		// MyBatis 查询
 //		return myBatisDictDao.get(id);
 		// Hibernate 查询
@@ -75,7 +74,7 @@ public class DictService extends BaseService {
 	}
 	
 	@Transactional(readOnly = false)
-	public void delete(String id) {
+	public void delete(Long id) {
 		dictDao.deleteById(id);
 		CacheUtils.remove(DictUtils.CACHE_DICT_MAP);
 	}

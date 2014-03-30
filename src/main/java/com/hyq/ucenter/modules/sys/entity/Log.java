@@ -9,9 +9,10 @@ import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -26,7 +27,6 @@ import org.hibernate.annotations.NotFoundAction;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hyq.ucenter.common.persistence.BaseEntity;
-import com.hyq.ucenter.common.utils.IdGen;
 
 /**
  * 日志Entity
@@ -37,10 +37,10 @@ import com.hyq.ucenter.common.utils.IdGen;
 @Table(name = "sys_log")
 @DynamicInsert @DynamicUpdate
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class Log extends BaseEntity<Area> {
+public class Log extends BaseEntity<Log> {
 
 	private static final long serialVersionUID = 1L;
-	private String id;			// 日志编号
+	private Long id;			// 日志编号
 	private String type; 		// 日志类型（1：接入日志；2：错误日志）
 	private User createBy;		// 创建者
 	private Date createDate;	// 日志创建时间
@@ -58,22 +58,14 @@ public class Log extends BaseEntity<Area> {
 		super();
 	}
 	
-	public Log(String id){
-		this();
-		this.id = id;
-	}
 
-	@PrePersist
-	public void prePersist(){
-		this.id = IdGen.uuid();
-	}
-	
 	@Id
-	public String getId() {
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	

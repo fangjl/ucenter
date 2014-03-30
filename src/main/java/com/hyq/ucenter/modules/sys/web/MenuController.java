@@ -20,11 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.hyq.ucenter.common.config.Global;
-import com.hyq.ucenter.common.utils.StringUtils;
 import com.hyq.ucenter.common.web.BaseController;
 import com.hyq.ucenter.modules.sys.entity.Menu;
 import com.hyq.ucenter.modules.sys.service.SystemService;
@@ -42,8 +40,8 @@ public class MenuController extends BaseController {
 	private SystemService systemService;
 	
 	@ModelAttribute("menu")
-	public Menu get(@RequestParam(required=false) String id) {
-		if (StringUtils.isNotBlank(id)){
+	public Menu get(@RequestParam(required=false) Long id) {
+		if (null!=id){
 			return systemService.getMenu(id);
 		}else{
 			return new Menu();
@@ -55,7 +53,7 @@ public class MenuController extends BaseController {
 	public String list(Model model) {
 		List<Menu> list = Lists.newArrayList();
 		List<Menu> sourcelist = systemService.findAllMenu();
-		Menu.sortList(list, sourcelist, "1");
+		Menu.sortList(list, sourcelist, new Long(1));
         model.addAttribute("list", list);
 		return "modules/sys/menuList";
 	}
@@ -64,7 +62,7 @@ public class MenuController extends BaseController {
 	@RequestMapping(value = "form")
 	public String form(Menu menu, Model model) {
 		if (menu.getParent()==null||menu.getParent().getId()==null){
-			menu.setParent(new Menu("1"));
+			menu.setParent(new Menu(new Long(1)));
 		}
 		menu.setParent(systemService.getMenu(menu.getParent().getId()));
 		model.addAttribute("menu", menu);
@@ -88,7 +86,7 @@ public class MenuController extends BaseController {
 	
 	@RequiresPermissions("sys:menu:edit")
 	@RequestMapping(value = "delete")
-	public String delete(String id, RedirectAttributes redirectAttributes) {
+	public String delete(Long id, RedirectAttributes redirectAttributes) {
 		if(Global.isDemoMode()){
 			addMessage(redirectAttributes, "演示模式，不允许操作！");
 			return "redirect:"+Global.getAdminPath()+"/sys/menu/";
@@ -136,7 +134,7 @@ public class MenuController extends BaseController {
     	int len = ids.length;
     	Menu[] menus = new Menu[len];
     	for (int i = 0; i < len; i++) {
-    		menus[i] = systemService.getMenu(ids[i]);
+    		menus[i] = systemService.getMenu(new Long(ids[i]));
     		menus[i].setSort(sorts[i]);
     		systemService.saveMenu(menus[i]);
     	}

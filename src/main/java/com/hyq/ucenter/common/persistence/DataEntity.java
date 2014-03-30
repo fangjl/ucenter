@@ -64,7 +64,7 @@ public abstract class DataEntity<T> extends BaseEntity<T> implements Serializabl
 	@PrePersist
 	public void prePersist(){
 		User user = UserUtils.getUser();
-		if (StringUtils.isNotBlank(user.getId())){
+		if (null!=user.getId()){
 			this.updateBy = user;
 			this.createBy = user;
 		}
@@ -75,7 +75,7 @@ public abstract class DataEntity<T> extends BaseEntity<T> implements Serializabl
 	@PreUpdate
 	public void preUpdate(){
 		User user = UserUtils.getUser();
-		if (StringUtils.isNotBlank(user.getId())){
+		if (null!=user.getId()){
 			this.updateBy = user;
 		}
 		this.updateDate = new Date();

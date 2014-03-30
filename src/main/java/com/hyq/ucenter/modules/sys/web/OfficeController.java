@@ -1,16 +1,10 @@
-/**
- * Copyright &copy; 2012-2013 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- */
+
 package com.hyq.ucenter.modules.sys.web;
 
 import java.util.List;
 import java.util.Map;
-
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,11 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.hyq.ucenter.common.config.Global;
-import com.hyq.ucenter.common.utils.StringUtils;
+import com.hyq.ucenter.common.persistence.Page;
 import com.hyq.ucenter.common.web.BaseController;
 import com.hyq.ucenter.modules.sys.entity.Office;
 import com.hyq.ucenter.modules.sys.entity.User;
@@ -44,34 +37,39 @@ public class OfficeController extends BaseController {
 	private OfficeService officeService;
 	
 	@ModelAttribute("office")
-	public Office get(@RequestParam(required=false) String id) {
-		if (StringUtils.isNotBlank(id)){
+	public Office get(@RequestParam(required=false) Long id) {
+		if (id!=null){
 			return officeService.get(id);
 		}else{
-			return new Office();
+			
+			return new Office(UserUtils.getUser().getTenantCode());
 		}
 	}
 
-	@RequiresPermissions("sys:office:view")
-	@RequestMapping(value = {"list", ""})
-	public String list(Office office, Model model) {
-//		User user = UserUtils.getUser();
-//		if(user.isAdmin()){
-			office.setId("1");
-//		}else{
-//			office.setId(user.getOffice().getId());
-//		}
-		model.addAttribute("office", office);
-		List<Office> list = Lists.newArrayList();
-		List<Office> sourcelist = officeService.findAll();
-		Office.sortList(list, sourcelist, office.getId());
-        model.addAttribute("list", list);
-		return "modules/sys/officeList";
+	
+	
+	//*******************************气站
+	
+	/**
+	 * 
+	 * @param extId
+	 * @param type
+	 * @param grade
+	 * @param response
+	 * @return
+	 */
+	
+	
+	@RequestMapping(value ="stationList")
+	public String stationList(Office office, HttpServletRequest request, HttpServletResponse response, Model model) {
+		office.setType("2");   //气站类型
+		Page<Office> page = officeService.findOfficePage(new Page<Office>(request, response), office);
+        model.addAttribute("page", page);
+		return "modules/sys/officeStationList";
 	}
 
-	@RequiresPermissions("sys:office:view")
-	@RequestMapping(value = "form")
-	public String form(Office office, Model model) {
+	@RequestMapping(value = "stationForm")
+	public String stationForm(Office office, Model model) {
 		User user = UserUtils.getUser();
 		if (office.getParent()==null || office.getParent().getId()==null){
 			office.setParent(user.getOffice());
@@ -81,40 +79,101 @@ public class OfficeController extends BaseController {
 			office.setArea(office.getParent().getArea());
 		}
 		model.addAttribute("office", office);
-		return "modules/sys/officeForm";
+		return "modules/sys/officeStationForm";
 	}
 	
-	@RequiresPermissions("sys:office:edit")
-	@RequestMapping(value = "save")
-	public String save(Office office, Model model, RedirectAttributes redirectAttributes) {
+	@RequestMapping(value = "stationSave")
+	public String stationSave(Office office, Model model, RedirectAttributes redirectAttributes) {
+		office.setType("2");    //门店
+		office.setGrade("2");    
 		if(Global.isDemoMode()){
 			addMessage(redirectAttributes, "演示模式，不允许操作！");
-			return "redirect:"+Global.getAdminPath()+"/sys/office/";
+			return "redirect:"+Global.getAdminPath()+"/sys/office/stationList";
 		}
 		if (!beanValidator(model, office)){
-			return form(office, model);
+			return stationForm(office, model);
+		}
+		officeService.save(office);
+		addMessage(redirectAttributes, "保存门店" + office.getName() + "'成功");
+		return "redirect:"+Global.getAdminPath()+"/sys/office/stationList";
+	}
+	
+	@RequestMapping(value = "stationDelete")
+	public String stationDelete(Long id, RedirectAttributes redirectAttributes) {
+		if(Global.isDemoMode()){
+			addMessage(redirectAttributes, "演示模式，不允许操作！");
+			return "redirect:"+Global.getAdminPath()+"/sys/office/stationList";
+		}
+		if (get(id).isRoot()){
+			addMessage(redirectAttributes, "删除机构失败, 不允许删除顶级机构或编号空");
+		}else{
+			officeService.delete(id);
+			addMessage(redirectAttributes, "删除门店成功");
+		}
+		return "redirect:"+Global.getAdminPath()+"/sys/office/stationList";
+	}
+
+	
+	
+	//****************************************门店
+	
+	
+
+	
+	@RequestMapping(value ="storeList")
+	public String storeList(Office office, HttpServletRequest request, HttpServletResponse response, Model model) {
+		office.setType("3");   //门店类型
+		Page<Office> page = officeService.findOfficePage(new Page<Office>(request, response), office);
+        model.addAttribute("page", page);
+		return "modules/sys/officeStoreList";
+	}
+
+	@RequestMapping(value = "storeForm")
+	public String storeForm(Office office, Model model) {
+		User user = UserUtils.getUser();
+		if (office.getParent()==null || office.getParent().getId()==null){
+			office.setParent(user.getOffice());
+		}
+		office.setParent(officeService.get(office.getParent().getId()));
+		if (office.getArea()==null){
+			office.setArea(office.getParent().getArea());
+		}
+		model.addAttribute("office", office);
+		return "modules/sys/officeStoreForm";
+	}
+	
+	@RequestMapping(value = "storeSave")
+	public String storeSave(Office office, Model model, RedirectAttributes redirectAttributes) {
+		office.setType("3"); //门店类型
+		office.setGrade("3");//三级机构
+		if(Global.isDemoMode()){
+			addMessage(redirectAttributes, "演示模式，不允许操作！");
+			return "redirect:"+Global.getAdminPath()+"/sys/office/storeList";
+		}
+		if (!beanValidator(model, office)){
+			return storeForm(office, model);
 		}
 		officeService.save(office);
 		addMessage(redirectAttributes, "保存机构'" + office.getName() + "'成功");
-		return "redirect:"+Global.getAdminPath()+"/sys/office/";
+		return "redirect:"+Global.getAdminPath()+"/sys/office/storeList";
 	}
 	
-	@RequiresPermissions("sys:office:edit")
-	@RequestMapping(value = "delete")
-	public String delete(String id, RedirectAttributes redirectAttributes) {
+	@RequestMapping(value = "storeDelete")
+	public String storeDelete(Long id, RedirectAttributes redirectAttributes) {
 		if(Global.isDemoMode()){
 			addMessage(redirectAttributes, "演示模式，不允许操作！");
-			return "redirect:"+Global.getAdminPath()+"/sys/office/";
+			return "redirect:"+Global.getAdminPath()+"/sys/office/storeList";
 		}
-		if (Office.isRoot(id)){
+		if (get(id).isRoot()){
 			addMessage(redirectAttributes, "删除机构失败, 不允许删除顶级机构或编号空");
 		}else{
 			officeService.delete(id);
 			addMessage(redirectAttributes, "删除机构成功");
 		}
-		return "redirect:"+Global.getAdminPath()+"/sys/office/";
+		return "redirect:"+Global.getAdminPath()+"/sys/office/storeList";
 	}
-
+	
+	
 	@RequiresUser
 	@ResponseBody
 	@RequestMapping(value = "treeData")
@@ -122,7 +181,6 @@ public class OfficeController extends BaseController {
 			@RequestParam(required=false) Long grade, HttpServletResponse response) {
 		response.setContentType("application/json; charset=UTF-8");
 		List<Map<String, Object>> mapList = Lists.newArrayList();
-//		User user = UserUtils.getUser();
 		List<Office> list = officeService.findAll();
 		for (int i=0; i<list.size(); i++){
 			Office e = list.get(i);
@@ -131,7 +189,6 @@ public class OfficeController extends BaseController {
 					&& (grade == null || (grade != null && Integer.parseInt(e.getGrade()) <= grade.intValue()))){
 				Map<String, Object> map = Maps.newHashMap();
 				map.put("id", e.getId());
-//				map.put("pId", !user.isAdmin() && e.getId().equals(user.getOffice().getId())?0:e.getParent()!=null?e.getParent().getId():0);
 				map.put("pId", e.getParent()!=null?e.getParent().getId():0);
 				map.put("name", e.getName());
 				mapList.add(map);

@@ -1,8 +1,4 @@
-/**
- * Copyright &copy; 2012-2013 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- */
+
 package com.hyq.ucenter.modules.sys.entity;
 
 import java.util.Date;
@@ -19,6 +15,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.DynamicInsert;
@@ -39,20 +36,17 @@ import com.hyq.ucenter.common.utils.Collections3;
 import com.hyq.ucenter.common.utils.excel.annotation.ExcelField;
 import com.hyq.ucenter.common.utils.excel.fieldtype.RoleListType;
 
-/**
- * 用户Entity
- * @author ThinkGem
- * @version 2013-5-15
- */
+
 @Entity
 @Table(name = "sys_user")
 @DynamicInsert @DynamicUpdate
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class User extends IdEntity<User> {
-
 	private static final long serialVersionUID = 1L;
+	public static final String ADMIN_USER= "1";
+	public static final String SUPER_USER = "2";
+	public static final String NOMONDE_USER = "3";
 	private String tenantCode;
-	
 	private Office office;	// 归属部门
 	private String loginName;// 登录名
 	private String password;// 密码
@@ -61,7 +55,7 @@ public class User extends IdEntity<User> {
 	private String email;	// 邮箱
 	private String phone;	// 电话
 	private String mobile;	// 手机
-	private String userType;// 用户类型
+	private String userType;// 用户类型     1 : 注册用户(超级管理员)，2：　添加的用户　　　
 	private String loginIp;	// 最后登陆IP
 	private Date loginDate;	// 最后登陆日期
 	
@@ -235,7 +229,7 @@ public class User extends IdEntity<User> {
 	public List<String> getRoleIdList() {
 		List<String> roleIdList = Lists.newArrayList();
 		for (Role role : roleList) {
-			roleIdList.add(role.getId());
+			roleIdList.add(role.getId()+"");
 		}
 		return roleIdList;
 	}
@@ -245,7 +239,7 @@ public class User extends IdEntity<User> {
 		roleList = Lists.newArrayList();
 		for (String roleId : roleIdList) {
 			Role role = new Role();
-			role.setId(roleId);
+			role.setId(Long.parseLong(roleId));
 			roleList.add(role);
 		}
 	}
@@ -257,19 +251,20 @@ public class User extends IdEntity<User> {
 	public String getRoleNames() {
 		return Collections3.extractToString(roleList, "name", ", ");
 	}
-	
 	@Transient
-	public boolean isAdmin(){
-		return isAdmin(this.id);
+	public  boolean isAdmin(){
+		return isAdmin(this.userType);
 	}
-	
 	@Transient
-	public static boolean isAdmin(String id){
-		return id != null && id.equals("1");
+	public  boolean isSuper(){
+		return isSuper(this.userType);
 	}
-	
-//	@Override
-//	public String toString() {
-//		return ToStringBuilder.reflectionToString(this);
-//	}
+	@Transient
+	public static boolean isAdmin(String userType){
+		return StringUtils.isNotBlank(userType) && userType.equals(User.ADMIN_USER);
+	}@Transient
+	public static boolean isSuper(String userType){
+		return StringUtils.isNotBlank(userType) && userType.equals(User.SUPER_USER);
+	}
+
 }

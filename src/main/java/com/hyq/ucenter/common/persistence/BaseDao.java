@@ -237,7 +237,7 @@ public class BaseDao<T> {
 				}
 			}
 			// 插入前执行方法
-			if (StringUtils.isBlank((String)id)){
+			if (id!=null){
 				for (Method method : entity.getClass().getMethods()){
 					PrePersist pp = method.getAnnotation(PrePersist.class);
 					if (pp != null){

@@ -1,17 +1,9 @@
-/**
- * Copyright &copy; 2012-2013 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- */
+
 package com.hyq.ucenter.modules.sys.service;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
-import org.activiti.engine.IdentityService;
-import org.activiti.engine.identity.Group;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.shiro.SecurityUtils;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
@@ -20,11 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.Maps;
 import com.hyq.ucenter.common.persistence.Page;
 import com.hyq.ucenter.common.security.Digests;
 import com.hyq.ucenter.common.service.BaseService;
-import com.hyq.ucenter.common.utils.Collections3;
 import com.hyq.ucenter.common.utils.Encodes;
 import com.hyq.ucenter.common.utils.StringUtils;
 import com.hyq.ucenter.modules.sys.dao.MenuDao;
@@ -38,13 +28,10 @@ import com.hyq.ucenter.modules.sys.utils.UserUtils;
 
 /**
  * 系统管理，安全相关实体的管理类,包括用户、角色、菜单.
- * @author ThinkGem
- * @version 2013-5-15
  */
 @Service
 @Transactional(readOnly = true)
 public class SystemService extends BaseService  {
-	
 	public static final String HASH_ALGORITHM = "SHA-1";
 	public static final int HASH_INTERATIONS = 1024;
 	public static final int SALT_SIZE = 8;
@@ -56,26 +43,25 @@ public class SystemService extends BaseService  {
 	@Autowired
 	private MenuDao menuDao;
 	@Autowired
+	private OfficeService officeService;
+	@Autowired
 	private SystemAuthorizingRealm systemRealm;
 
 	//-- User Service --//
 	
-	public User getUser(String id) {
+	public User getUser(Long id) {
 		return userDao.get(id);
 	}
 	
 	public Page<User> findUser(Page<User> page, User user) {
 		DetachedCriteria dc = userDao.createDetachedCriteria();
 		User currentUser = UserUtils.getUser();
-		dc.createAlias("company", "company");
-		if (user.getCompany()!=null && StringUtils.isNotBlank(user.getCompany().getId())){
-			dc.add(Restrictions.or(
-					Restrictions.eq("company.id", user.getCompany().getId()),
-					Restrictions.like("company.parentIds", "%,"+user.getCompany().getId()+",%")
-					));
-		}
+		
+		
+		
+		
 		dc.createAlias("office", "office");
-		if (user.getOffice()!=null && StringUtils.isNotBlank(user.getOffice().getId())){
+		if (user.getOffice()!=null){
 			dc.add(Restrictions.or(
 					Restrictions.eq("office.id", user.getOffice().getId()),
 					Restrictions.like("office.parentIds", "%,"+user.getOffice().getId()+",%")
@@ -83,10 +69,12 @@ public class SystemService extends BaseService  {
 		}
 		// 如果不是超级管理员，则不显示超级管理员用户
 		if (!currentUser.isAdmin()){
-			dc.add(Restrictions.ne("id", "1")); 
+			dc.add(Restrictions.ne("userType", User.ADMIN_USER)); 
+		}
+		if (!currentUser.isSuper()){
+			dc.add(Restrictions.eq("tenantCode", currentUser.getTenantCode())); 
 		}
 		dc.add(dataScopeFilter(currentUser, "office", ""));
-		//System.out.println(dataScopeFilterString(currentUser, "office", ""));
 		if (StringUtils.isNotEmpty(user.getLoginName())){
 			dc.add(Restrictions.like("loginName", "%"+user.getLoginName()+"%"));
 		}
@@ -95,7 +83,8 @@ public class SystemService extends BaseService  {
 		}
 		dc.add(Restrictions.eq(User.FIELD_DEL_FLAG, User.DEL_FLAG_NORMAL));
 		if (!StringUtils.isNotEmpty(page.getOrderBy())){
-			dc.addOrder(Order.asc("company.code")).addOrder(Order.asc("office.code")).addOrder(Order.desc("name"));
+			dc.addOrder(Order.asc("office.code"))
+			  .addOrder(Order.desc("name"));
 		}
 		return userDao.find(page, dc);
 	}
@@ -105,30 +94,34 @@ public class SystemService extends BaseService  {
 		return dataScopeFilterString(user, "office", "");
 	}
 	
-	public User getUserByLoginName(String loginName) {
-		return userDao.findByLoginName(loginName);
+	public User getUserByLoginName(String tenantCode,String loginName) {
+		
+		
+		return userDao.findByLoginName(tenantCode,loginName);
 	}
 
 	@Transactional(readOnly = false)
 	public void saveUser(User user) {
+		
+		user.setUserType(User.NOMONDE_USER);
 		userDao.clear();
 		userDao.save(user);
 		systemRealm.clearAllCachedAuthorizationInfo();
 	}
 
 	@Transactional(readOnly = false)
-	public void deleteUser(String id) {
+	public void deleteUser(Long id) {
 		userDao.deleteById(id);
 	}
 	
 	@Transactional(readOnly = false)
-	public void updatePasswordById(String id, String loginName, String newPassword) {
+	public void updatePasswordById(Long id, String loginName, String newPassword) {
 		userDao.updatePasswordById(entryptPassword(newPassword), id);
 		systemRealm.clearCachedAuthorizationInfo(loginName);
 	}
 	
 	@Transactional(readOnly = false)
-	public void updateUserLoginInfo(String id) {
+	public void updateUserLoginInfo(Long id) {
 		userDao.updateLoginInfo(SecurityUtils.getSubject().getSession().getHost(), new Date(), id);
 	}
 	
@@ -155,12 +148,12 @@ public class SystemService extends BaseService  {
 	
 	//-- Role Service --//
 	
-	public Role getRole(String id) {
+	public Role getRole(Long id) {
 		return roleDao.get(id);
 	}
 
 	public Role findRoleByName(String name) {
-		return roleDao.findByName(name);
+		return roleDao.findByName(UserUtils.getUser().getTenantCode(),name);
 	}
 	
 	public List<Role> findAllRole(){
@@ -172,7 +165,6 @@ public class SystemService extends BaseService  {
 		roleDao.clear();
 		roleDao.save(role);
 		systemRealm.clearAllCachedAuthorizationInfo();
-		
 		UserUtils.removeCache(UserUtils.CACHE_ROLE_LIST);
 	}
 
@@ -185,12 +177,12 @@ public class SystemService extends BaseService  {
 	}
 	
 	@Transactional(readOnly = false)
-	public Boolean outUserInRole(Role role, String userId) {
+	public Boolean outUserInRole(Role role, Long userId) {
 		User user = userDao.get(userId);
 		List<String> roleIds = user.getRoleIdList();
 		List<Role> roles = user.getRoleList();
 		// 
-		if (roleIds.contains(role.getId())) {
+		if (roleIds.contains(role.getId()+"")) {
 			roles.remove(role);
 			saveUser(user);
 			return true;
@@ -200,7 +192,7 @@ public class SystemService extends BaseService  {
 	
 	@Transactional(readOnly = false)
 	public User assignUserToRole(Role role, String userId) {
-		User user = userDao.get(userId);
+		User user = userDao.get(Long.parseLong(userId));
 		List<String> roleIds = user.getRoleIdList();
 		if (roleIds.contains(role.getId())) {
 			return null;
@@ -212,7 +204,7 @@ public class SystemService extends BaseService  {
 
 	//-- Menu Service --//
 	
-	public Menu getMenu(String id) {
+	public Menu getMenu(Long id) {
 		return menuDao.get(id);
 	}
 
@@ -238,7 +230,7 @@ public class SystemService extends BaseService  {
 	}
 
 	@Transactional(readOnly = false)
-	public void deleteMenu(String id) {
+	public void deleteMenu(Long id) {
 		menuDao.deleteById(id, "%,"+id+",%");
 		systemRealm.clearAllCachedAuthorizationInfo();
 		UserUtils.removeCache(UserUtils.CACHE_MENU_LIST);

@@ -1,12 +1,6 @@
-/**
- * Copyright &copy; 2012-2013 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- */
+
 package com.hyq.ucenter.modules.sys.entity;
-
 import java.util.List;
-
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -15,6 +9,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.DynamicInsert;
@@ -25,12 +20,6 @@ import org.hibernate.annotations.Where;
 import org.hibernate.validator.constraints.Length;
 import com.google.common.collect.Lists;
 import com.hyq.ucenter.common.persistence.IdEntity;
-
-/**
- * 机构Entity
- * @author ThinkGem
- * @version 2013-05-15
- */
 @Entity
 @Table(name = "sys_office")
 @DynamicInsert @DynamicUpdate
@@ -39,16 +28,13 @@ public class Office extends IdEntity<Office> {
 
 	private static final long serialVersionUID = 1L;
 	
-	
 	private String tenantCode;
-	
-	
 	private Office parent;	// 父级编号
 	private String parentIds; // 所有父级编号
 	private Area area;		// 归属区域
 	private String code; 	// 机构编码
 	private String name; 	// 机构名称
-	private String type; 	// 机构类型（1：公司；2：部门；3：小组）
+	private String type; 	// 机构类型（1：公司；2：加气；3：门店）
 	private String grade; 	// 机构等级（1：一级；2：二级；3：三级；4：四级）
 	private String address; // 联系地址
 	private String zipCode; // 邮政编码
@@ -92,7 +78,7 @@ public class Office extends IdEntity<Office> {
 		this.parent = parent;
 	}
 
-	@Length(min=1, max=255)
+	@Length(min=0, max=255)
 	public String getParentIds() {
 		return parentIds;
 	}
@@ -226,9 +212,14 @@ public class Office extends IdEntity<Office> {
 	}
 
 	@Transient
-	public static void sortList(List<Office> list, List<Office> sourcelist, String parentId){
+	public static void sortList(List<Office> list, List<Office> sourcelist, Long parentId){
 		for (int i=0; i<sourcelist.size(); i++){
 			Office e = sourcelist.get(i);
+			
+			
+			
+			
+			
 			if (e.getParent()!=null && e.getParent().getId()!=null
 					&& e.getParent().getId().equals(parentId)){
 				list.add(e);
@@ -241,18 +232,16 @@ public class Office extends IdEntity<Office> {
 						break;
 					}
 				}
+			}else{
+				list.add(e);
 			}
 		}
 	}
 
 	@Transient
 	public boolean isRoot(){
-		return isRoot(this.id);
+		return !StringUtils.isNotBlank(this.getParentIds());
 	}
 	
-	@Transient
-	public static boolean isRoot(String id){
-		return id != null && id.equals("1");
-	}
 	
 }
