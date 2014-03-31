@@ -9,7 +9,6 @@ import java.io.Serializable;
 import java.security.SecureRandom;
 import java.util.UUID;
 
-import org.activiti.engine.impl.cfg.IdGenerator;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.mgt.eis.SessionIdGenerator;
 import org.springframework.context.annotation.Lazy;
@@ -22,7 +21,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Lazy(false)
-public class IdGen implements IdGenerator, SessionIdGenerator {
+public class IdGen implements SessionIdGenerator {
 
 	private static SecureRandom random = new SecureRandom();
 	
@@ -49,13 +48,7 @@ public class IdGen implements IdGenerator, SessionIdGenerator {
 		return Encodes.encodeBase62(randomBytes);
 	}
 	
-	/**
-	 * Activiti ID 生成
-	 */
-	@Override
-	public String getNextId() {
-		return IdGen.uuid();
-	}
+	
 
 	@Override
 	public Serializable generateId(Session session) {
@@ -65,7 +58,6 @@ public class IdGen implements IdGenerator, SessionIdGenerator {
 	public static void main(String[] args) {
 		System.out.println(IdGen.uuid());
 		System.out.println(IdGen.uuid().length());
-		System.out.println(new com.hyq.ucenter.common.utils.IdGen().getNextId());
 	}
 
 }
