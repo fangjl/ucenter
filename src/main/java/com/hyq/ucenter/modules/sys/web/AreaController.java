@@ -20,11 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.hyq.ucenter.common.config.Global;
-import com.hyq.ucenter.common.utils.StringUtils;
 import com.hyq.ucenter.common.web.BaseController;
 import com.hyq.ucenter.modules.sys.entity.Area;
 import com.hyq.ucenter.modules.sys.service.AreaService;

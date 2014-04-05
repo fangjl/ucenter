@@ -81,7 +81,9 @@ public class MyCasRealms extends AuthorizingRealm{
         if ("saml".equalsIgnoreCase(getValidationProtocol())) {
             return new Saml11TicketValidator(urlPrefix);
         }
-        return new Cas20ServiceTicketValidator(urlPrefix);
+        Cas20ServiceTicketValidator c = new Cas20ServiceTicketValidator(urlPrefix);
+        c.setEncoding("UTF-8");
+        return c;
     }
     
     /**
@@ -159,6 +161,7 @@ public class MyCasRealms extends AuthorizingRealm{
         } catch (TicketValidationException e) { 
         	
             throw new CasAuthenticationException("Unable to validate ticket [" + ticket + "]", e);
+            
         }
     }
     

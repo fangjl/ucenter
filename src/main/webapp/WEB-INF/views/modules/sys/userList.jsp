@@ -86,7 +86,7 @@
 		<c:forEach items="${page.list}" var="user">
 			<tr>
 				<td>${user.office.name}</td>
-				<td><a href="${ctx}/sys/user/form?id=${user.id}">${user.loginName}@${user.tenantCode}</a></td>
+				<td><a href="${ctx}/sys/user/form?id=${user.id}">${user.loginName}</a></td>
 				<td>${user.name}</td>
 				<td>${user.phone}</td>
 				<td>${user.mobile}</td>

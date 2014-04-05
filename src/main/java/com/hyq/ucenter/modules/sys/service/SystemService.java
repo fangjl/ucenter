@@ -23,7 +23,6 @@ import com.hyq.ucenter.modules.sys.dao.UserDao;
 import com.hyq.ucenter.modules.sys.entity.Menu;
 import com.hyq.ucenter.modules.sys.entity.Role;
 import com.hyq.ucenter.modules.sys.entity.User;
-import com.hyq.ucenter.modules.sys.security.SystemAuthorizingRealm;
 import com.hyq.ucenter.modules.sys.utils.UserUtils;
 
 /**
@@ -44,8 +43,7 @@ public class SystemService extends BaseService  {
 	private MenuDao menuDao;
 	@Autowired
 	private OfficeService officeService;
-	@Autowired
-	private SystemAuthorizingRealm systemRealm;
+
 
 	//-- User Service --//
 	
@@ -103,10 +101,17 @@ public class SystemService extends BaseService  {
 	@Transactional(readOnly = false)
 	public void saveUser(User user) {
 		
+		
+
+		if(!user.getLoginName().contains("@")){
+			user.setLoginName(user.getLoginName()+"@"+user.getTenantCode());
+		}
+		
 		user.setUserType(User.NOMONDE_USER);
 		userDao.clear();
+		
 		userDao.save(user);
-		systemRealm.clearAllCachedAuthorizationInfo();
+		
 	}
 
 	@Transactional(readOnly = false)
@@ -117,7 +122,6 @@ public class SystemService extends BaseService  {
 	@Transactional(readOnly = false)
 	public void updatePasswordById(Long id, String loginName, String newPassword) {
 		userDao.updatePasswordById(entryptPassword(newPassword), id);
-		systemRealm.clearCachedAuthorizationInfo(loginName);
 	}
 	
 	@Transactional(readOnly = false)
@@ -164,14 +168,12 @@ public class SystemService extends BaseService  {
 	public void saveRole(Role role) {
 		roleDao.clear();
 		roleDao.save(role);
-		systemRealm.clearAllCachedAuthorizationInfo();
 		UserUtils.removeCache(UserUtils.CACHE_ROLE_LIST);
 	}
 
 	@Transactional(readOnly = false)
 	public void deleteRole(String id) {
 		roleDao.deleteById(id);
-		systemRealm.clearAllCachedAuthorizationInfo();
 		
 		UserUtils.removeCache(UserUtils.CACHE_ROLE_LIST);
 	}
@@ -225,14 +227,12 @@ public class SystemService extends BaseService  {
 			e.setParentIds(e.getParentIds().replace(oldParentIds, menu.getParentIds()));
 		}
 		menuDao.save(list);
-		systemRealm.clearAllCachedAuthorizationInfo();
 		UserUtils.removeCache(UserUtils.CACHE_MENU_LIST);
 	}
 
 	@Transactional(readOnly = false)
 	public void deleteMenu(Long id) {
 		menuDao.deleteById(id, "%,"+id+",%");
-		systemRealm.clearAllCachedAuthorizationInfo();
 		UserUtils.removeCache(UserUtils.CACHE_MENU_LIST);
 	}
 

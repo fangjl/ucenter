@@ -19,7 +19,6 @@ import com.hyq.ucenter.modules.sys.entity.Office;
 import com.hyq.ucenter.modules.sys.entity.Role;
 import com.hyq.ucenter.modules.sys.entity.Tenant;
 import com.hyq.ucenter.modules.sys.entity.User;
-import com.hyq.ucenter.modules.sys.security.SystemAuthorizingRealm;
 @Service
 @Transactional(readOnly = true)
 public class RegisterService extends BaseService {
@@ -37,8 +36,6 @@ public class RegisterService extends BaseService {
 	private TenantDao tenantDao;
 	@Autowired
 	private MenuDao menuDao;	
-	@Autowired
-	private SystemAuthorizingRealm systemRealm;
 	
 	public Office get(String id) {
 		return officeDao.get(id);
@@ -90,7 +87,7 @@ public class RegisterService extends BaseService {
 		user.setPassword(entryptPassword("admin"));
 		user.setPhone(t.getPhone());
 		user.setUserType("1");    //系统管理员
-		user.setLoginName("admin");
+		user.setLoginName("admin@"+t.getTenantCode());
 		user.setMobile(t.getPhone());
 		user.setNo("00000");
 		user.setCreateDate(d);
@@ -100,7 +97,6 @@ public class RegisterService extends BaseService {
 		
 		user.setRoleList(roleList);
 		userDao.save(user);
-		systemRealm.clearAllCachedAuthorizationInfo();
 	}
 
 	public Tenant findTenantByCode(String tenantCode){

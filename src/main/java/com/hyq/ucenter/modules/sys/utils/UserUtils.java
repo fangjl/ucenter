@@ -13,6 +13,7 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
+
 import com.google.common.collect.Maps;
 import com.hyq.ucenter.common.service.BaseService;
 import com.hyq.ucenter.common.utils.SpringContextHolder;
@@ -26,7 +27,7 @@ import com.hyq.ucenter.modules.sys.entity.Menu;
 import com.hyq.ucenter.modules.sys.entity.Office;
 import com.hyq.ucenter.modules.sys.entity.Role;
 import com.hyq.ucenter.modules.sys.entity.User;
-import com.hyq.ucenter.modules.sys.security.SystemAuthorizingRealm.Principal;
+import com.hyq.ucenter.modules.sys.security.RemotePrincipal;
 
 /**
  * 用户工具类
@@ -52,9 +53,9 @@ public class UserUtils extends BaseService {
 		if (user == null){
 			try{
 				Subject subject = SecurityUtils.getSubject();
-				Principal principal = (Principal)subject.getPrincipal();
+				RemotePrincipal principal = (RemotePrincipal)subject.getPrincipal();
 				if (principal!=null){
-					user = userDao.get(principal.getId());
+					user = userDao.findByLoginName(principal.getTenantcode(),principal.getUsername());
 					putCache(CACHE_USER, user);
 				}
 			}catch (UnavailableSecurityManagerException e) {
@@ -186,7 +187,7 @@ public class UserUtils extends BaseService {
 		Map<String, Object> map = Maps.newHashMap();
 		try{
 			Subject subject = SecurityUtils.getSubject();
-			Principal principal = (Principal)subject.getPrincipal();
+			RemotePrincipal principal = (RemotePrincipal)subject.getPrincipal();
 			return principal!=null?principal.getCacheMap():map;
 		}catch (UnavailableSecurityManagerException e) {
 			

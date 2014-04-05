@@ -44,13 +44,13 @@
 				 
 	           </ul>
 	           <ul class="nav pull-right">
-			  	 <li id="themeSwitch" class="dropdown">
+			  	 <%-- <li id="themeSwitch" class="dropdown">
 			       	<a class="dropdown-toggle" data-toggle="dropdown" href="#" title="主题切换"><i class="icon-th-large"></i></a>
 				    <ul class="dropdown-menu">
 				      <c:forEach items="${fns:getDictList('theme')}" var="dict"><li><a href="#" onclick="location='${pageContext.request.contextPath}/theme/${dict.value}?url='+location.href">${dict.label}</a></li></c:forEach>
 				    </ul>
 				    <!--[if lte IE 6]><script type="text/javascript">$('#themeSwitch').hide();</script><![endif]-->
-			     </li>
+			     </li> --%>
 			  	 <li class="dropdown">
 				    <a class="dropdown-toggle" data-toggle="dropdown" href="#" title="个人信息">您好, <shiro:principal property="name"/></a>
 				    <ul class="dropdown-menu">
@@ -58,8 +58,11 @@
 				      <li><a href="${ctx}/sys/user/modifyPwd" target="mainFrame"><i class="icon-lock"></i>&nbsp;  修改密码</a></li>
 				    </ul>
 			  	 </li>
-			  	 <li><a href="${ctx}/logout" title="退出登录">退出</a></li>
-			  	 <li>&nbsp;</li>
+<%-- 			  	 <li><a href="${ctx}/logout" title="退出登录">退出</a></li>
+ --%>			  	 
+ 					<li><a href="http://115.29.141.81:8080/cas/logout" title="退出登录">退出</a></li>
+ 					
+ 					<li>&nbsp;</li>
 	           </ul>
 	         </div><!--/.nav-collapse -->
 	      </div>
