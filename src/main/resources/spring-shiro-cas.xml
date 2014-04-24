@@ -48,7 +48,7 @@
 				/userfiles/** = anon
 				/register = anon
 				${adminPath}/login = authc
-				${adminPath}/logout = logout
+				/logout = logout
 				${adminPath}/** = user
 				/error.jsp = anon
 		 	</value>
