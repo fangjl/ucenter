@@ -83,6 +83,7 @@ public class MyCasRealms extends AuthorizingRealm{
         }
         Cas20ServiceTicketValidator c = new Cas20ServiceTicketValidator(urlPrefix);
         c.setEncoding("UTF-8");
+        
         return c;
     }
     
@@ -99,7 +100,7 @@ public class MyCasRealms extends AuthorizingRealm{
         if (token == null) {
             return null;
         }
-        
+      //  org.apache.shiro.cas.CasRealm
         String ticket = (String)casToken.getCredentials();
         if (!StringUtils.hasText(ticket)) {
             return null;

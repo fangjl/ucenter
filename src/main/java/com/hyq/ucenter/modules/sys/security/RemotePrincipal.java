@@ -3,10 +3,10 @@ package com.hyq.ucenter.modules.sys.security;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jasig.cas.client.authentication.AttributePrincipal;
 
 import com.google.common.collect.Maps;
-
 
 /**
  * 单点登入反馈信息
@@ -36,25 +36,49 @@ public class RemotePrincipal implements java.io.Serializable{
 	public RemotePrincipal(AttributePrincipal attributePrincipal){
 		Map<String,Object> m = attributePrincipal.getAttributes();
 		
+		
+		
+		
+		
+		
+		
+		
+		
+		if(m.size()==0){
+			this.username = attributePrincipal.getName();
+			this.tenantcode = this.username.split("@")[0];
+		}else{
+			this.username   =  attributePrincipal.getName();
+			this.name 		=  (String)    m.get("name");
+			this.tenantcode =  (String)    m.get("tenant_code");
+			this.tenantname =  (String)    m.get("tenant_name");
+			this.office     =  (String)    m.get("office");
+			this.dataScope  =  (String)    m.get("data_scope");
+			this.rolename   =  (String)    m.get("rolename");
 
-		this.username   =  attributePrincipal.getName();
-		this.name 		=  (String)    m.get("name");
-		this.tenantcode =  (String)    m.get("tenant_code");
-		this.tenantname =  (String)    m.get("tenant_name");
-		this.office     =  (String)    m.get("office");
-		this.dataScope  =  (String)    m.get("data_scope");
-		this.rolename   =  (String)    m.get("rolename");
-
-		String perm=  (String) m.get("permission");
-		this.permissions = perm.replaceAll("\\[", "").replaceAll("\\]", "");
-						
-		String acloffices	=  (String) m.get("office_codes_names");
-		String[] aclofficeses = acloffices.replaceAll("\\[", "").replaceAll("\\]", "").split(",");
-		this.offices = Maps.newHashMap();
-		for(String o:aclofficeses){
-			String[] r = o.split("\\|");
-			offices.put(r[0], r[1]);
+			String perm=  (String) m.get("permission");
+			
+			if(StringUtils.isNotBlank(perm)){
+				this.permissions = perm.replaceAll("\\[", "").replaceAll("\\]", "");
+			}
+							
+			String acloffices	=  StringUtils.isNotBlank((String) m.get("office_codes_names"))?(String) m.get("office_codes_names"):"";
+			this.offices = Maps.newHashMap();
+			if(StringUtils.isNotBlank(acloffices)){
+				String[] aclofficeses = acloffices.replaceAll("\\[", "").replaceAll("\\]", "").split(",");
+				for(String o:aclofficeses){
+					if(StringUtils.isNotBlank(o) && !o.equals("null")){
+						String[] r = o.split("\\|");
+						offices.put(r[0], r[1]);
+					} 
+					
+				}
+			}
+			
+			
 		}
+
+		
 	}
 
 	public String getUsername() {
