@@ -60,7 +60,7 @@
 			  	 </li>
 <%-- 			  	 <li><a href="${ctx}/logout" title="退出登录">退出</a></li>
  --%>			  	 
- 					<li><a href="${ctxPath }/logout" title="退出登录">退出</a></li>
+ 					<li><a href="http://115.29.141.81:8080/cas/logout?service=http://115.29.141.81:8080/lpg" title="退出登录">退出</a></li>
  					
  					<li>&nbsp;</li>
 	           </ul>
