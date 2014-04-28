@@ -1,18 +1,9 @@
-/**
- * Copyright &copy; 2012-2013 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- */
 package com.hyq.ucenter.modules.sys.interceptor;
-
 import java.util.Date;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-
 import com.hyq.ucenter.common.config.Global;
 import com.hyq.ucenter.common.service.BaseService;
 import com.hyq.ucenter.common.utils.SpringContextHolder;
@@ -21,13 +12,8 @@ import com.hyq.ucenter.modules.sys.dao.LogDao;
 import com.hyq.ucenter.modules.sys.entity.Log;
 import com.hyq.ucenter.modules.sys.entity.User;
 import com.hyq.ucenter.modules.sys.utils.UserUtils;
-
-import eu.bitwalker.useragentutils.DeviceType;
-import eu.bitwalker.useragentutils.UserAgent;
-
 /**
  * 系统拦截器
- * @author ThinkGem
  * @version 2013-6-6
  */
 public class LogInterceptor extends BaseService implements HandlerInterceptor {
@@ -43,13 +29,7 @@ public class LogInterceptor extends BaseService implements HandlerInterceptor {
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, 
 			ModelAndView modelAndView) throws Exception {
-		if(modelAndView!=null) {
-			String viewName = modelAndView.getViewName();
-			UserAgent userAgent = UserAgent.parseUserAgentString(request.getHeader("User-Agent")); 
-			if(viewName.startsWith("modules/") && DeviceType.MOBILE.equals(userAgent.getOperatingSystem().getDeviceType())){
-				modelAndView.setViewName(viewName.replaceFirst("modules", "mobile"));
-			}
-		}
+		
 	}
 
 	@Override

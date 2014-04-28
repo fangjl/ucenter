@@ -1,11 +1,6 @@
-/**
- * Copyright &copy; 2012-2013 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- */
+
 package com.hyq.ucenter.common.persistence;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -22,21 +17,8 @@ import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.QueryWrapperFilter;
-import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.BooleanClause.Occur;
-import org.apache.lucene.search.highlight.Formatter;
-import org.apache.lucene.search.highlight.Highlighter;
-import org.apache.lucene.search.highlight.InvalidTokenOffsetsException;
-import org.apache.lucene.search.highlight.QueryScorer;
-import org.apache.lucene.search.highlight.SimpleFragmenter;
-import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
-import org.apache.lucene.util.Version;
+
+
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
@@ -47,17 +29,11 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.internal.CriteriaImpl;
-import org.hibernate.search.FullTextQuery;
 import org.hibernate.search.FullTextSession;
 import org.hibernate.search.Search;
-import org.hibernate.search.filter.impl.CachingWrapperFilter;
-import org.hibernate.search.query.DatabaseRetrievalMethod;
-import org.hibernate.search.query.ObjectLookupMethod;
 import org.hibernate.transform.ResultTransformer;
 import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.wltea.analyzer.lucene.IKAnalyzer;
-
 import com.hyq.ucenter.common.utils.Reflections;
 import com.hyq.ucenter.common.utils.StringUtils;
 
@@ -686,106 +662,7 @@ public class BaseDao<T> {
 		}
 	}
 	
-	/**
-	 * 全文检索
-	 * @param page 分页对象
-	 * @param query 关键字查询对象
-	 * @param queryFilter 查询过滤对象
-	 * @param sort 排序对象
-	 * @return 分页对象
-	 */
-	@SuppressWarnings("unchecked")
-	public Page<T> search(Page<T> page, BooleanQuery query, BooleanQuery queryFilter, Sort sort){
-		
-		// 按关键字查询
-		FullTextQuery fullTextQuery = getFullTextSession().createFullTextQuery(query, entityClass);
-        
-		// 过滤无效的内容
-		if (queryFilter!=null){
-			fullTextQuery.setFilter(new CachingWrapperFilter(new QueryWrapperFilter(queryFilter)));
-		}
-        
-        // 设置排序
-		if (sort!=null){
-			fullTextQuery.setSort(sort);
-		}
-
-		// 定义分页
-		page.setCount(fullTextQuery.getResultSize());
-		fullTextQuery.setFirstResult(page.getFirstResult());
-		fullTextQuery.setMaxResults(page.getMaxResults()); 
-
-		// 先从持久化上下文中查找对象，如果没有再从二级缓存中查找
-        fullTextQuery.initializeObjectsWith(ObjectLookupMethod.SECOND_LEVEL_CACHE, DatabaseRetrievalMethod.QUERY); 
-        
-		// 返回结果
-		page.setList(fullTextQuery.list());
-        
-		return page;
-	}
 	
-	/**
-	 * 获取全文查询对象
-	 */
-	public BooleanQuery getFullTextQuery(BooleanClause... booleanClauses){
-		BooleanQuery booleanQuery = new BooleanQuery();
-		for (BooleanClause booleanClause : booleanClauses){
-			booleanQuery.add(booleanClause);
-		}
-		return booleanQuery;
-	}
 
-	/**
-	 * 获取全文查询对象
-	 * @param q 查询关键字
-	 * @param fields 查询字段
-	 * @return 全文查询对象
-	 */
-	public BooleanQuery getFullTextQuery(String q, String... fields){
-		Analyzer analyzer = new IKAnalyzer();
-		BooleanQuery query = new BooleanQuery();
-		try {
-			if (StringUtils.isNotBlank(q)){
-				for (String field : fields){
-					QueryParser parser = new QueryParser(Version.LUCENE_36, field, analyzer);   
-					query.add(parser.parse(q), Occur.SHOULD);
-				}
-			}
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		return query;
-	}
 	
-	/**
-	 * 设置关键字高亮
-	 * @param query 查询对象
-	 * @param list 设置高亮的内容列表
-	 * @param subLength 截取长度
-	 * @param fields 字段名
-	 */
-	public List<T> keywordsHighlight(BooleanQuery query, List<T> list, int subLength, String... fields){
-		Analyzer analyzer = new IKAnalyzer();
-		Formatter formatter = new SimpleHTMLFormatter("<span class=\"highlight\">", "</span>");   
-		Highlighter highlighter = new Highlighter(formatter, new QueryScorer(query)); 
-		highlighter.setTextFragmenter(new SimpleFragmenter(subLength)); 
-		for(T entity : list){ 
-			try {
-				for (String field : fields){
-					String text = StringUtils.replaceHtml((String)Reflections.invokeGetter(entity, field));
-					String description = highlighter.getBestFragment(analyzer,field, text);
-					if(description!=null){
-						Reflections.invokeSetter(entity, fields[0], description);
-						break;
-					}
-					Reflections.invokeSetter(entity, fields[0], StringUtils.abbr(text, subLength*2));
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (InvalidTokenOffsetsException e) {
-				e.printStackTrace();
-			} 
-		}
-		return list;
-	}
 }
